@@ -6,7 +6,11 @@
   "scripts": {
     "test": "make test"
   },
-  "author": "timmydcrawford@gmail.com",
+  "author": "Timmy Crawford <timmydcrawford@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/timmyc/conepatrol-mtb-sensors.git"
+  },
   "license": "MIT",
   "dependencies": {
     "x-ray": "^2.0.2"
