@@ -1,6 +1,6 @@
 {
   "name": "conepatrol-mtb-sensors",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A scraping utility for MTB weather data",
   "main": "index.js",
   "scripts": {
