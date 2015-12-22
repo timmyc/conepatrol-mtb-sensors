@@ -23,13 +23,23 @@ var COLUMN_KEYS = {
 	"Summit Wind Avg": 'summit-wind-avg',
 	"Summit Wind Dir": 'summit-wind-dir',
 	"Summit Wind Max": 'summit-wind-max',
-}
+};
+
+var CONDITIONS_KEYS = {
+	'since 3pm yesterday': 'snowfall_since_3_pm',
+	'24 Hour': 'snowfall_last_24_hours',
+	'3 Day': 'snowfall_last_3_days',
+	'7 Day': 'snowfall_last_7_days',
+	'snowfall since Oct 1': 'snowfall_season'
+};
 
 module.exports = {
 	getWeatherData: function( cb ) {
-		x( 'http://www.mtbachelor.com/24-weather-report/', 'tr', [ { time: 'th', columns: [ 'td' ] } ] )(function( err, data ){
+		x( 'http://www.mtbachelor.com/24-weather-report/',
+			'tr', [ { time: 'th', columns: [ 'td' ] } ] )
+		( function( err, data ){
 			if ( err ) {
-				return []
+				return cb( err, [] );
 			}
 
 			var isNa = /n\/a/;
@@ -53,7 +63,41 @@ module.exports = {
 				return record;
 			} );
 
-			cb( results );
+			cb( null, results );
+		} );
+	},
+
+	getConditionsPageData: function( cb ) {
+		x( 'http://www.mtbachelor.com/conditions-report/',
+			'div.conditions',
+			x( '.item', [ { key: '.value', value: '.key' } ] ) )
+		( function( err, data ) {
+			if ( err ) {
+				return cb( err, {} );
+			}
+
+			var snowfallData = {
+				base: {},
+				mid: {}
+			}
+
+			data.forEach( function( row ) {
+				if ( ! row.value || ! row.key || ! CONDITIONS_KEYS[ row.key ] ) {
+					return;
+				}
+
+				var key = CONDITIONS_KEYS[ row.key ],
+					value = row.value.replace( '"', '' );
+
+				if ( snowfallData.mid[ key ] ) {
+					snowfallData.base[ key ] = value;
+					return;
+				}
+
+				snowfallData.mid[ key ] = value
+			} )
+
+			cb( null, snowfallData );
 		} );
 	}	
 }
